@@ -53,24 +53,20 @@ class Application(tk.Frame):
     def add_device(self): 
         if len(self.device_list.curselection()) != 0:
             curr_selection = self.device_options[self.device_list.curselection()[0]]
-            if curr_selection not in self.specified_devices: 
-                self.specified_devices.append(curr_selection)
+            if curr_selection not in self.device_selection.get(0, self.device_list.size()): 
                 self.device_selection.insert(0, curr_selection)
 
     def add_country(self): 
         if len(self.country_list.curselection()) != 0: 
             curr_selection = self.country_options[self.country_list.curselection()[0]]
-            if curr_selection not in self.specified_countries: 
-                self.specified_countries.append(curr_selection)
+            if curr_selection not in self.country_selection.get(0, self.device_list.size()): 
                 self.country_selection.insert(0, curr_selection)
     
     def remove_device(self): 
-        curr_selection = self.device_options[self.device_selection.curselection()[0]]
         self.device_selection.delete(0)
-        self.specified_devices.remove()
 
     def remove_country(self): 
-        pass
+        self.country_selection.delete(0)
     
     def create_widgets(self):
         self.country_block()
@@ -98,7 +94,7 @@ class Application(tk.Frame):
 
     def device_block(self):
         self.device_label = tk.Label(self, text="Possible Devices:", pady = 10)
-        self.device_selection_label = tk.Label(self, text="Devices to Search On:")
+        self.device_selection_label = tk.Label(self, text="To Search On:")
         self.device_list = tk.Listbox(self)
 
         for i, option in enumerate(self.device_options):
@@ -118,7 +114,6 @@ class Application(tk.Frame):
     def command_block(self):
         self.submit = tk.Button(self, text = "RUN", fg="green", command=self.run, width = 10)
         self.submit.grid(row = 4, column = 5, pady = 25, padx = 25)
-
 
     def translate_device(self, device):
         return self.device_map[device]
@@ -153,10 +148,21 @@ class Application(tk.Frame):
             print(output_string)
         
     def run(self):
+        # for all in current list, add to selected devices + selected_countries
+        for country in self.country_selection.get(0, self.device_list.size()): 
+            self.specified_countries.append(country)
+
+        for devices in self.device_selection.get(0, self.device_list.size()):
+            self.specified_devices.append(devices)
+
         self.specified_devices = [self.translate_device(device) for device in self.specified_devices]
         self.find_match()
         self.translate_testers()
         self.output()
+        self.cleanup()
+
+    def cleanup(self): 
+        pass
 
 bugs = pd.read_csv('bugs.csv')
 devices = pd.read_csv('devices.csv')
