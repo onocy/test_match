@@ -1,5 +1,4 @@
 import pandas as pd
-
 import tkinter as tk
 from tkinter import messagebox
 
@@ -128,10 +127,8 @@ class Application(tk.Frame):
         self.translate_testers()
         self.output()
 
-
     def translate_device(self, device):
         return self.device_map[device]
-
 
     def find_match(self): 
         # Populate tester_count based on specified devices 
