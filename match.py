@@ -1,6 +1,9 @@
 import pandas as pd
 
 import tkinter as tk
+from tkinter import messagebox
+
+
 class Application(tk.Frame):
     def __init__(self, master=None, bugs=None, devices=None, testers=None, tester_device=None):
         super().__init__(master)
@@ -29,11 +32,11 @@ class Application(tk.Frame):
     def create_options(self):
 
         for row in self.devices.itertuples(): 
-            self.map_devices(row)
+            self.map_devices(row = row)
             self.device_options.append(row.description)
 
         for row in self.testers.itertuples():
-            self.map_testers(row)
+            self.map_testers(row = row)
             if row.country not in self.country_options: 
                 self.country_options.append(row.country)
 
@@ -65,6 +68,7 @@ class Application(tk.Frame):
     def remove_device(self): 
         curr_selection = self.device_options[self.device_selection.curselection()[0]]
         self.device_selection.delete(0)
+        self.specified_devices.remove()
 
     def remove_country(self): 
         pass
@@ -117,11 +121,6 @@ class Application(tk.Frame):
         self.quit.grid(row = 2, column = 1)
 
     def run(self):
-        self.map_devices()
-        self.map_testers()
-        self.specified_devices = []
-        self.specified_devices.append(self.device.get())
-        self.specified_countries.append(self.country.get())
         self.specified_devices = [self.translate_device(device) for device in self.specified_devices]
         self.find_match()
         self.translate_testers()
@@ -129,6 +128,8 @@ class Application(tk.Frame):
 
 
     def translate_device(self, device):
+        print('d', device)
+        print('dmap', self.device_map)
         return self.device_map[device]
 
 
@@ -149,7 +150,7 @@ class Application(tk.Frame):
                 self.res.append(self.tester_map[k] + ' => ' + str(self.tester_count[k]))
 
     def output(self): 
-        tkMessageBox.showinfo(self.res)
+        messagebox.showinfo(self.res)
         print(self.res)
         
 
