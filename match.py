@@ -79,46 +79,45 @@ class Application(tk.Frame):
 
     def country_block(self):
         self.country_label = tk.Label(self, text="Possible Countries:")
-        self.country_label = tk.Label(self, text="Countries to Search On:")
+        self.country_selection_label = tk.Label(self, text="Countries to Search On:")
         self.country_list = tk.Listbox(self)
 
         for i, option in enumerate(self.country_options):
             self.country_list.insert(i, option) 
 
         self.country_selection = tk.Listbox(self)
-        self.add_country = tk.Button(self, text = "ADD", command = self.add_country)
-        self.remove_country = tk.Button(self, text = "REMOVE", command = self.remove_country)
+        self.add_country = tk.Button(self, text = "ADD", fg = "blue", command = self.add_country)
+        self.remove_country = tk.Button(self, text = "REMOVE", fg = "red", command = self.remove_country)
 
         self.country_label.grid(row = 0, column = 0, padx = 10)
-        self.country_list.grid(row = 0, column = 1, padx = 10, pady=30)
-        self.add_country.grid(row = 0, column = 2)
-        self.country_selection.grid(row = 0, column = 3, padx = 10)
-        self.remove_country.grid(row = 0, column = 4, padx = 10)
+        self.country_list.grid(row = 1, column = 0, padx = 10, pady=30)
+        self.add_country.grid(row = 1, column = 1)
+        self.country_selection_label.grid(row = 0, column = 3)
+        self.country_selection.grid(row = 1, column = 3, padx = 10)
+        self.remove_country.grid(row = 1, column = 5, padx = 10)
 
     def device_block(self):
         self.device_label = tk.Label(self, text="Possible Devices:")
-        self.device_label = tk.Label(self, text="Devices to Search On:")
+        self.device_selection_label = tk.Label(self, text="Devices to Search On:")
         self.device_list = tk.Listbox(self)
 
         for i, option in enumerate(self.device_options):
             self.device_list.insert(i, option) 
 
         self.device_selection = tk.Listbox(self)
-        self.add_device = tk.Button(self, text = "ADD", command = self.add_device)
-        self.remove_device = tk.Button(self, text = "REMOVE", command = self.remove_device)
+        self.add_device = tk.Button(self, text = "ADD", fg = "blue", command = self.add_device)
+        self.remove_device = tk.Button(self, text = "REMOVE", fg = "red", command = self.remove_device)
 
-        self.device_label.grid(row = 1, column = 0)
-        self.device_list.grid(row = 1, column = 1)
-        self.add_device.grid(row = 1, column = 2)
-        self.device_selection.grid(row = 1, column = 3)
-        self.remove_device.grid(row = 1, column = 4)
+        self.device_label.grid(row = 2, column = 0)
+        self.device_list.grid(row = 3, column = 0)
+        self.add_device.grid(row = 3, column = 1)
+        self.device_selection_label.grid(row = 2, column = 3)
+        self.device_selection.grid(row = 3, column = 3)
+        self.remove_device.grid(row = 3, column = 5)
 
     def command_block(self):
-        self.submit = tk.Button(self, text = "RUN", fg="blue", command=self.run)
-        self.quit = tk.Button(self, text="QUIT", fg="red", command=self.master.destroy)
-
-        self.submit.grid(row = 2, column = 0, columnspan = 2, padx = 20)
-        self.quit.grid(row = 2, column = 2, columnspan = 2, pady = 30)
+        self.submit = tk.Button(self, text = "RUN", fg="green", command=self.run)
+        self.submit.grid(row = 4, column = 0, columnspan = 2, padx = 20)
 
 
     def translate_device(self, device):
