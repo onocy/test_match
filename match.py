@@ -78,7 +78,8 @@ class Application(tk.Frame):
         self.command_block()
 
     def country_block(self):
-        self.country_label = tk.Label(self, text="Country:")
+        self.country_label = tk.Label(self, text="Possible Countries:")
+        self.country_label = tk.Label(self, text="Countries to Search On:")
         self.country_list = tk.Listbox(self)
 
         for i, option in enumerate(self.country_options):
@@ -88,15 +89,15 @@ class Application(tk.Frame):
         self.add_country = tk.Button(self, text = "ADD", command = self.add_country)
         self.remove_country = tk.Button(self, text = "REMOVE", command = self.remove_country)
 
-        self.country_label.grid(row = 0, column = 0)
-        self.country_list.grid(row = 0, column = 1)
+        self.country_label.grid(row = 0, column = 0, padx = 10)
+        self.country_list.grid(row = 0, column = 1, padx = 10, pady=30)
         self.add_country.grid(row = 0, column = 2)
-        self.country_selection.grid(row = 0, column = 3)
-        self.remove_country.grid(row = 0, column = 4)
+        self.country_selection.grid(row = 0, column = 3, padx = 10)
+        self.remove_country.grid(row = 0, column = 4, padx = 10)
 
     def device_block(self):
-        self.device_label = tk.Label(self, text="Device:")
-
+        self.device_label = tk.Label(self, text="Possible Devices:")
+        self.device_label = tk.Label(self, text="Devices to Search On:")
         self.device_list = tk.Listbox(self)
 
         for i, option in enumerate(self.device_options):
@@ -116,8 +117,8 @@ class Application(tk.Frame):
         self.submit = tk.Button(self, text = "RUN", fg="blue", command=self.run)
         self.quit = tk.Button(self, text="QUIT", fg="red", command=self.master.destroy)
 
-        self.submit.grid(row = 2, column = 0)
-        self.quit.grid(row = 2, column = 1)
+        self.submit.grid(row = 2, column = 0, columnspan = 2, padx = 20)
+        self.quit.grid(row = 2, column = 2, columnspan = 2, pady = 30)
 
 
     def translate_device(self, device):
@@ -133,21 +134,24 @@ class Application(tk.Frame):
                     else:
                         self.tester_count[row.testerId] += 1
 
+
     def translate_testers(self):
         # Retranslate testerId using tester_map that has only included relevant testers and output to a list
         self.map_testers()
-        for k, v in self.tester_count.items():
+        sorted_tester_count = sorted(self.tester_count.items(), key=lambda x: x[1])[::-1]
+        for k, v in sorted_tester_count:
             if k in self.tester_map: 
-                self.res.append(self.tester_map[k] + ' => ' + str(self.tester_count[k]))
+                self.res.append('Tester: ' + self.tester_map[k]+ ', ' + 'Bugs: ' + str(v))
 
     def output(self): 
         if len(self.res) == 0: 
             messagebox.showinfo("Results:", "No Results")
         else:
             output_string = ""
-            for result in self.res: 
-                output_string += (result + "\n")
+            for i, result in enumerate(self.res, 1): 
+                output_string += (str(i) + '. ' + result + "\n\n")
             messagebox.showinfo("Results:", output_string)
+            print(output_string)
         
     def run(self):
         self.specified_devices = [self.translate_device(device) for device in self.specified_devices]
