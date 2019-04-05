@@ -49,19 +49,22 @@ class Application(tk.Frame):
                 self.tester_map[row.testerId] = row.firstName + ' ' + row.lastName
 
     def add_device(self): 
-        curr_selection = self.device_options[self.device_list.curselection()[0]]
-        if curr_selection not in self.specified_devices: 
-            self.specified_devices.append(curr_selection)
-            self.device_selection.insert(0, curr_selection)
+        if len(self.device_list.curselection()) != 0:
+            curr_selection = self.device_options[self.device_list.curselection()[0]]
+            if curr_selection not in self.specified_devices: 
+                self.specified_devices.append(curr_selection)
+                self.device_selection.insert(0, curr_selection)
 
     def add_country(self): 
-        curr_selection = self.country_options[self.country_list.curselection()[0]]
-        if curr_selection not in self.specified_countries: 
-            self.specified_countries.append(curr_selection)
-            self.country_selection.insert(0, curr_selection)
+        if len(self.country_list.curselection()) != 0: 
+            curr_selection = self.country_options[self.country_list.curselection()[0]]
+            if curr_selection not in self.specified_countries: 
+                self.specified_countries.append(curr_selection)
+                self.country_selection.insert(0, curr_selection)
     
     def remove_device(self): 
-        pass
+        curr_selection = self.device_options[self.device_selection.curselection()[0]]
+        self.device_selection.delete(0)
 
     def remove_country(self): 
         pass
