@@ -61,6 +61,11 @@ class Application(tk.Frame):
         pass
     
     def create_widgets(self):
+        self.country_block()
+        self.device_block()
+        self.command_block()
+
+    def country_block(self):
         self.country_label = tk.Label(self, text="Country:")
         self.country_list = tk.Listbox(self)
 
@@ -68,7 +73,16 @@ class Application(tk.Frame):
             self.country_list.insert(i, option) 
 
         self.country_selection = tk.Listbox(self)
+        self.add_country = tk.Button(self, text = "ADD", command = self.add_country)
+        self.remove_country = tk.Button(self, text = "REMOVE", command = self.remove_country)
 
+        self.country_label.grid(row = 0, column = 0)
+        self.country_list.grid(row = 0, column = 1)
+        self.add_country.grid(row = 0, column = 2)
+        self.country_selection.grid(row = 0, column = 3)
+        self.remove_country.grid(row = 0, column = 4)
+
+    def device_block(self):
         self.device_label = tk.Label(self, text="Device:")
 
         self.device_list = tk.Listbox(self)
@@ -77,22 +91,8 @@ class Application(tk.Frame):
             self.device_list.insert(i, option) 
 
         self.device_selection = tk.Listbox(self)
-
-        self.submit = tk.Button(self, text = "RUN", fg="blue", command=self.run)
-
         self.add_device = tk.Button(self, text = "ADD", command = self.add_device)
         self.remove_device = tk.Button(self, text = "REMOVE", command = self.remove_device)
-
-        self.add_country = tk.Button(self, text = "ADD", command = self.add_country)
-        self.remove_country = tk.Button(self, text = "REMOVE", command = self.remove_country)
-
-        self.quit = tk.Button(self, text="QUIT", fg="red", command=self.master.destroy)
-
-        self.country_label.grid(row = 0, column = 0)
-        self.country_list.grid(row = 0, column = 1)
-        self.add_country.grid(row = 0, column = 2)
-        self.country_selection.grid(row = 0, column = 3)
-        self.remove_country.grid(row = 0, column = 4)
 
         self.device_label.grid(row = 1, column = 0)
         self.device_list.grid(row = 1, column = 1)
@@ -100,9 +100,12 @@ class Application(tk.Frame):
         self.device_selection.grid(row = 1, column = 3)
         self.remove_device.grid(row = 1, column = 4)
 
+    def command_block(self):
+        self.submit = tk.Button(self, text = "RUN", fg="blue", command=self.run)
+        self.quit = tk.Button(self, text="QUIT", fg="red", command=self.master.destroy)
+
         self.submit.grid(row = 2, column = 0)
         self.quit.grid(row = 2, column = 1)
-
 
     def run(self):
         self.map_devices()
@@ -140,7 +143,6 @@ class Application(tk.Frame):
         tkMessageBox.showinfo(self.res)
         print(self.res)
         
-
 
 bugs = pd.read_csv('bugs.csv')
 devices = pd.read_csv('devices.csv')
