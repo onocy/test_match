@@ -94,7 +94,7 @@ class Application(tk.Frame):
 
     def device_block(self):
         self.device_label = tk.Label(self, text="Possible Devices:", pady = 10)
-        self.device_selection_label = tk.Label(self, text="To Search On:")
+        self.device_selection_label = tk.Label(self, text="Devices To Search On:")
         self.device_list = tk.Listbox(self)
 
         for i, option in enumerate(self.device_options):
@@ -128,7 +128,6 @@ class Application(tk.Frame):
                     else:
                         self.tester_count[row.testerId] += 1
 
-
     def translate_testers(self):
         # Retranslate testerId using tester_map that has only included relevant testers and output to a list
         self.map_testers()
@@ -141,7 +140,7 @@ class Application(tk.Frame):
         if len(self.res) == 0: 
             messagebox.showinfo("Results:", "No Results")
         else:
-            output_string = ""
+            output_string = "\n"
             for i, result in enumerate(self.res, 1): 
                 output_string += (str(i) + '. ' + result + "\n\n")
             messagebox.showinfo("Results:", output_string)
@@ -149,11 +148,17 @@ class Application(tk.Frame):
         
     def run(self):
         # for all in current list, add to selected devices + selected_countries
-        for country in self.country_selection.get(0, self.device_list.size()): 
-            self.specified_countries.append(country)
+        if "*ALL*" not in self.country_selection.get(0, self.device_list.size()):
+            for country in self.country_selection.get(0, self.device_list.size()): 
+                self.specified_countries.append(country)
+        else: 
+            self.specified_countries = self.country_options[1:]
 
-        for devices in self.device_selection.get(0, self.device_list.size()):
-            self.specified_devices.append(devices)
+        if "*ALL*" not in self.device_selection.get(0, self.device_list.size()):
+            for devices in self.device_selection.get(0, self.device_list.size()):
+                self.specified_devices.append(devices)
+        else: 
+            self.specified_devices = self.device_options[1:]
 
         self.specified_devices = [self.translate_device(device) for device in self.specified_devices]
         self.find_match()
@@ -162,7 +167,8 @@ class Application(tk.Frame):
         self.cleanup()
 
     def cleanup(self): 
-        pass
+        self.country_selection.delete(0,self.device_list.size())
+        self.device_selection.delete(0,self.device_list.size())
 
 bugs = pd.read_csv('bugs.csv')
 devices = pd.read_csv('devices.csv')
@@ -170,6 +176,7 @@ testers = pd.read_csv('testers.csv')
 tester_device = pd.read_csv('tester_device.csv')
 
 root = tk.Tk()
+root.title("Test Match")
 app = Application(root, bugs, devices, testers, tester_device)
 app.mainloop()
 
