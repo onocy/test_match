@@ -28,46 +28,9 @@ class Application(tk.Frame):
 
         self.create_options()
         self.create_widgets()
-
-    def create_options(self):
-        for row in self.devices.itertuples(): 
-            self.map_devices(row = row)
-            self.device_options.append(row.description)
-
-        for row in self.testers.itertuples():
-            if row.country not in self.country_options: 
-                self.country_options.append(row.country)
-
-    def map_devices(self, row):
-        # Name -> ID for devices 
-        if row.description not in self.device_map:
-            self.device_map[row.description] = row.deviceId
-
-    def map_testers(self):
-        # ID -> Name for testers based on current country restrictions
-        for row in self.testers.itertuples(): 
-            if row.country in self.specified_countries: 
-                if row.testerId not in self.tester_map: 
-                    self.tester_map[row.testerId] = row.firstName + ' ' + row.lastName
-
-    def add_device(self): 
-        if len(self.device_list.curselection()) != 0:
-            curr_selection = self.device_options[self.device_list.curselection()[0]]
-            if curr_selection not in self.device_selection.get(0, self.device_list.size()): 
-                self.device_selection.insert(0, curr_selection)
-
-    def add_country(self): 
-        if len(self.country_list.curselection()) != 0: 
-            curr_selection = self.country_options[self.country_list.curselection()[0]]
-            if curr_selection not in self.country_selection.get(0, self.device_list.size()): 
-                self.country_selection.insert(0, curr_selection)
     
-    def remove_device(self): 
-        self.device_selection.delete(0)
+    ### UI ###
 
-    def remove_country(self): 
-        self.country_selection.delete(0)
-    
     def create_widgets(self):
         self.country_block()
         self.device_block()
@@ -115,6 +78,49 @@ class Application(tk.Frame):
         self.submit = tk.Button(self, text = "RUN", fg="green", command=self.run, width = 10)
         self.submit.grid(row = 4, column = 5, pady = 25, padx = 25)
 
+    ### Internal Structures ###
+
+    def create_options(self):
+        for row in self.devices.itertuples(): 
+            self.map_devices(row = row)
+            self.device_options.append(row.description)
+
+        for row in self.testers.itertuples():
+            if row.country not in self.country_options: 
+                self.country_options.append(row.country)
+
+    def map_devices(self, row):
+        # Name -> ID for devices 
+        if row.description not in self.device_map:
+            self.device_map[row.description] = row.deviceId
+
+    def map_testers(self):
+        # ID -> Name for testers based on current country restrictions
+        for row in self.testers.itertuples(): 
+            if row.country in self.specified_countries: 
+                if row.testerId not in self.tester_map: 
+                    self.tester_map[row.testerId] = row.firstName + ' ' + row.lastName
+
+    ### Services ###
+
+    def add_device(self): 
+        if len(self.device_list.curselection()) != 0:
+            curr_selection = self.device_options[self.device_list.curselection()[0]]
+            if curr_selection not in self.device_selection.get(0, self.device_list.size()): 
+                self.device_selection.insert(0, curr_selection)
+
+    def add_country(self): 
+        if len(self.country_list.curselection()) != 0: 
+            curr_selection = self.country_options[self.country_list.curselection()[0]]
+            if curr_selection not in self.country_selection.get(0, self.device_list.size()): 
+                self.country_selection.insert(0, curr_selection)
+    
+    def remove_device(self): 
+        self.device_selection.delete(0)
+
+    def remove_country(self): 
+        self.country_selection.delete(0)
+    
     def translate_device(self, device):
         return self.device_map[device]
 
@@ -137,6 +143,7 @@ class Application(tk.Frame):
                 self.res.append('Tester: ' + self.tester_map[k]+ ', ' + 'Bugs: ' + str(v))
 
     def output(self): 
+        # Output into message box based on internal result array
         if len(self.res) == 0: 
             messagebox.showinfo("Results:", "No Results")
         else:
@@ -145,9 +152,14 @@ class Application(tk.Frame):
                 output_string += (str(i) + '. ' + result + "\n\n")
             messagebox.showinfo("Results:", output_string)
             print(output_string)
-        
+
+    def cleanup(self): 
+        # After submit, remove selections
+        self.country_selection.delete(0,self.device_list.size())
+        self.device_selection.delete(0,self.device_list.size())
+
     def run(self):
-        # for all in current list, add to selected devices + selected_countries
+        # For all in current list, add to selected devices + selected_countries for search
         if "*ALL*" not in self.country_selection.get(0, self.device_list.size()):
             for country in self.country_selection.get(0, self.device_list.size()): 
                 self.specified_countries.append(country)
@@ -165,10 +177,6 @@ class Application(tk.Frame):
         self.translate_testers()
         self.output()
         self.cleanup()
-
-    def cleanup(self): 
-        self.country_selection.delete(0,self.device_list.size())
-        self.device_selection.delete(0,self.device_list.size())
 
 bugs = pd.read_csv('bugs.csv')
 devices = pd.read_csv('devices.csv')
