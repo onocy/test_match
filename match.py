@@ -1,46 +1,87 @@
 import pandas as pd
 
-bugs = pd.read_csv('bugs.csv')
-devices = pd.read_csv('devices.csv')
-testers = pd.read_csv('testers.csv')
-tester_device = pd.read_csv('tester_device.csv')
+import tkinter as tk
+class Application(tk.Frame):
+    def __init__(self, master=None):
+        # TKinter intializations
+        super().__init__(master)
+        self.master = master
+        self.pack()
+
+        # For each input name in input list, translate to device ID and add to specified_devices using new device_map  
+        self.specified_devices = [1, 2]
+
+        # For each input country in input list add to specified_countries  
+        self.specified_countries = ['US', 'GB']
+        self.tester_count = {}
+        self.device_map = {}
+        self.tester_map = {}
+        self.res = []
+        self.read_files()
+        self.run()
+        self.create_widgets()
+
+    def run(self):
+        self.map_devices()
+        self.map_testers()
+        self.find_match()
+        self.translate_testers()
+
+    def create_widgets(self):
+        self.lbl = tk.Label(self, text=self.res[0])
+        self.lbl.pack(side = "top")
+        self.txt = tk.Entry(self, width=10)
+        self.txt.pack(side = "top")
+
+        self.lbl2 = tk.Label(self, text=self.res[1])
+        self.lbl2.pack(side = "top")
+        self.txt = tk.Entry(self, width=10)
+        self.txt.pack(side = "top")
+
+        self.quit = tk.Button(self, text="QUIT", fg="red", command=self.master.destroy)
+        self.quit.pack(side="bottom")
+        
+    def read_files(self): 
+        self.bugs = pd.read_csv('bugs.csv')
+        self.devices = pd.read_csv('devices.csv')
+        self.testers = pd.read_csv('testers.csv')
+        self.tester_device = pd.read_csv('tester_device.csv')
+
+    def map_devices(self):
+        # Name -> ID for devices 
+        for row in self.devices.itertuples():
+            if row.description not in self.device_map:
+                self.device_map[row.description] = row.deviceId
+
+    def map_testers(self):
+        # ID -> Name for testers based on current country restrictions
+        for row in self.testers.itertuples(): 
+            if row.country in self.specified_countries: 
+                if row.testerId not in self.tester_map: 
+                    self.tester_map[row.testerId] = row.firstName + ' ' + row.lastName
+
+    def find_match(self): 
+        # Populate tester_count based on specified devices 
+        for row in self.bugs.itertuples(): 
+            for device in self.specified_devices: 
+                if row.deviceId == device: 
+                    if row.testerId not in self.tester_count: 
+                        self.tester_count[row.testerId] = 1
+                    else:
+                        self.tester_count[row.testerId] += 1
+
+    def translate_testers(self):
+        # Retranslate testerId using tester_map that has only included relevant testers and output to a list
+        for k, v in self.tester_count.items(): 
+            if k in self.tester_map: 
+                self.res.append(self.tester_map[k] + ' => ' + str(self.tester_count[k]))
+        print(self.res)
+
+root = tk.Tk()
+app = Application(master=root)
+app.mainloop()
 
 
-tester_count = {}
-res = []
 
-# For each input name in input list, translate to device ID and add to specified_devices using new device_map  
-specified_devices = [1, 2]
 
-# For each input country in input list add to specified_countries  
-specified_countries = ['US', 'GB']
 
-# Initialize map for name -> ID lookup on devices
-device_map = {}
-for row in devices.itertuples():
-    if row.description not in device_map:
-        device_map[row.description] = row.deviceId
-
-# Initialize map for ID -> name lookup on testers based on current Country restrictions
-tester_map = {}
-for row in testers.itertuples(): 
-    if row.country in specified_countries: 
-        if row.testerId not in tester_map: 
-            tester_map[row.testerId] = row.firstName + ' ' + row.lastName
-
-# Iterate over bugs and begin population of tester_count based on specified devices
-for row in bugs.itertuples(): 
-    for device in specified_devices: 
-        if row.deviceId == device: 
-            if row.testerId not in tester_count: 
-                tester_count[row.testerId] = 1
-            else:
-                tester_count[row.testerId] += 1
-
-# Retranslate testerId and output to a list
-for k, v in tester_count.items(): 
-    if k in tester_map: 
-        res.append(tester_map[k] + ' => ' + str(tester_count[k]))
-
-# ['Taybin Rutkin => 125', 'Miguel Bautista => 49']
-print(res)
