@@ -24,19 +24,18 @@ class Application(tk.Frame):
         self.tester_count = {}
         self.device_map = {}
         self.tester_map = {}
+
         self.res = []
 
         self.create_options()
         self.create_widgets()
 
     def create_options(self):
-
         for row in self.devices.itertuples(): 
             self.map_devices(row = row)
             self.device_options.append(row.description)
 
         for row in self.testers.itertuples():
-            self.map_testers(row = row)
             if row.country not in self.country_options: 
                 self.country_options.append(row.country)
 
@@ -44,18 +43,21 @@ class Application(tk.Frame):
         # Name -> ID for devices 
         if row.description not in self.device_map:
             self.device_map[row.description] = row.deviceId
+        print('device map', self.device_map)
 
-    def map_testers(self, row):
+    def map_testers(self):
         # ID -> Name for testers based on current country restrictions
-        if row.country in self.specified_countries: 
-            if row.testerId not in self.tester_map: 
-                self.tester_map[row.testerId] = row.firstName + ' ' + row.lastName
+        for row in self.testers.itertuples(): 
+            if row.country in self.specified_countries: 
+                if row.testerId not in self.tester_map: 
+                    self.tester_map[row.testerId] = row.firstName + ' ' + row.lastName
 
     def add_device(self): 
         if len(self.device_list.curselection()) != 0:
             curr_selection = self.device_options[self.device_list.curselection()[0]]
             if curr_selection not in self.specified_devices: 
                 self.specified_devices.append(curr_selection)
+                print(self.specified_devices)
                 self.device_selection.insert(0, curr_selection)
 
     def add_country(self): 
@@ -128,8 +130,6 @@ class Application(tk.Frame):
 
 
     def translate_device(self, device):
-        print('d', device)
-        print('dmap', self.device_map)
         return self.device_map[device]
 
 
@@ -142,15 +142,24 @@ class Application(tk.Frame):
                         self.tester_count[row.testerId] = 1
                     else:
                         self.tester_count[row.testerId] += 1
+        print('tc', self.tester_count)
 
     def translate_testers(self):
         # Retranslate testerId using tester_map that has only included relevant testers and output to a list
-        for k, v in self.tester_count.items(): 
+        self.map_testers()
+        for k, v in self.tester_count.items():
             if k in self.tester_map: 
+                print('res', self.res)
                 self.res.append(self.tester_map[k] + ' => ' + str(self.tester_count[k]))
 
     def output(self): 
-        messagebox.showinfo(self.res)
+        if len(self.res) == 0: 
+            messagebox.showinfo("Results:", "No Results")
+        else:
+            output_string = ""
+            for result in self.res: 
+                output_string += (result + "\n")
+            messagebox.showinfo("Results:", output_string)
         print(self.res)
         
 
